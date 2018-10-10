@@ -37,7 +37,6 @@ void *(*EmojiData)(void *, CFURLRef const, CFURLRef const);
 
 %end
 
-
 static inline char itoh(int i) {
 	if (i > 9) return 'A' + (i - 10);
 	return '0' + i;
@@ -80,14 +79,16 @@ void printBreakApart(NSString *str) {
 	XTCopyUncompressedBitmapRepresentation = (CFDataRef (*)(const UInt8 *, CFIndex))MSFindSymbol(ct, "__Z38XTCopyUncompressedBitmapRepresentationPKhm");
 	void *gsFont = dlopen(realPath2(@"/System/Library/PrivateFrameworks/FontServices.framework/libGSFontCache.dylib"), RTLD_LAZY);
 	NSDictionary *(*dict)() = (NSDictionary* (*)())dlsym(gsFont, "GSFontCacheGetDictionary");
-	NSDictionary *emoji = dict()[@"CTFontInfo.plist"][@"Attrs"][@".AppleColorEmojiUI"];
-	NSLog(@".AppleColorEmojiUI Character Set (libGSFontCache):");
-	CFDataRef compressedData = (__bridge CFDataRef)emoji[@"NSCTFontCharacterSetAttribute"];
-	CFDataRef uncompressedData = XTCopyUncompressedBitmapRepresentation(CFDataGetBytePtr(compressedData), CFDataGetLength(compressedData));
-	CFRelease(compressedData);
-	NSLog(@"%@", uncompressedData);
-	// printBreakApart(NSDataToHex([NSCharacterSet _emojiCharacterSet].bitmapRepresentation));
-	CFRelease(uncompressedData);
+	if (isiOS10Up) {
+		NSDictionary *emoji = dict()[@"CTFontInfo.plist"][@"Attrs"][@".AppleColorEmojiUI"];
+		NSLog(@".AppleColorEmojiUI Character Set (libGSFontCache):");
+		CFDataRef compressedData = (__bridge CFDataRef)emoji[@"NSCTFontCharacterSetAttribute"];
+		CFDataRef uncompressedData = XTCopyUncompressedBitmapRepresentation(CFDataGetBytePtr(compressedData), CFDataGetLength(compressedData));
+		CFRelease(compressedData);
+		NSLog(@"%@", uncompressedData);
+		// printBreakApart(NSDataToHex([NSCharacterSet _emojiCharacterSet].bitmapRepresentation));
+		CFRelease(uncompressedData);
+	}
 	%init;
 	if (isiOS10Up && _isTarget(TargetTypeGUINoExtension, @[@"com.apple.TextInput.kbd"])) {
 		dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_LAZY);
