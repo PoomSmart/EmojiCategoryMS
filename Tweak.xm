@@ -1,8 +1,9 @@
 #define CHECK_TARGET
 #define CHECK_EXCEPTIONS
-#import "../PS.h"
-#import "../EmojiLibrary/Header.h"
+#import <PSHeader/PS.h>
+#import <EmojiLibrary/Header.h>
 #import <substrate.h>
+#import <dlfcn.h>
 #import <HBLog.h>
 
 @interface NSCharacterSet (Private)
@@ -91,7 +92,7 @@ void printBreakApart(NSString *str) {
         CFRelease(uncompressedData);
     }
     %init;
-    if (IS_IOS_OR_NEWER(iOS_10_0) && _isTarget(TargetTypeGUINoExtension, @[@"com.apple.TextInput.kbd"])) {
+    if (IS_IOS_OR_NEWER(iOS_10_0) && _isTarget(TargetTypeApps, @[@"com.apple.TextInput.kbd"], nil)) {
         dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_LAZY);
         MSImageRef ref = MSGetImageByName(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"));
         emojiDataStrings = (CFMutableArrayRef (*)(void *))MSFindSymbol(ref, "__ZNK3CEM9EmojiData7stringsEv");

@@ -4,8 +4,8 @@ ARCHS = x86_64 i386
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = EmojiCategoryMS
-EmojiCategoryMS_FILES = Tweak.xm
-EmojiCategoryMS_USE_SUBSTRATE = 1
+$(TWEAK_NAME)_FILES = Tweak.xm
+$(TWEAK_NAME)_USE_SUBSTRATE = 1
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
